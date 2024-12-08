@@ -3,7 +3,8 @@
 {{if $.OutputQuery .SourceName}}
 {{if and (ne .Cmd ":copyfrom") (ne (hasPrefix .Cmd ":batch") true)}}
 const {{.ConstantName}} = {{$.Q}}-- name: {{.MethodName}} {{.Cmd}}
-{{escape .SQL}}
+{{range .Comments}}-- {{.}}
+{{end}}{{escape .SQL}}
 {{$.Q}}
 {{end}}
 
@@ -24,8 +25,6 @@ type {{.Ret.Type}} struct { {{- range .Ret.Struct.Fields}}
 {{end}}
 
 {{if eq .Cmd ":one"}}
-{{range .Comments}}//{{.}}
-{{end -}}
 {{- if $.EmitMethodsWithDBArgument -}}
 func (q *Queries) {{.MethodName}}(db DBTX, {{.Arg.Pair}}) ({{.Ret.DefineType}}, error) {
 	row := db.QueryRow(q.ctx, {{.ConstantName}}, {{.Arg.Params}})
@@ -42,8 +41,6 @@ func (q *Queries) {{.MethodName}}({{.Arg.Pair}}) ({{.Ret.DefineType}}, error) {
 {{end}}
 
 {{if eq .Cmd ":many"}}
-{{range .Comments}}//{{.}}
-{{end -}}
 {{- if $.EmitMethodsWithDBArgument -}}
 func (q *Queries) {{.MethodName}}(db DBTX, {{.Arg.Pair}}) ([]{{.Ret.DefineType}}, error) {
 	rows, err := db.Query(q.ctx, {{.ConstantName}}, {{.Arg.Params}})
@@ -75,8 +72,6 @@ func (q *Queries) {{.MethodName}}({{.Arg.Pair}}) ([]{{.Ret.DefineType}}, error) 
 {{end}}
 
 {{if eq .Cmd ":exec"}}
-{{range .Comments}}//{{.}}
-{{end -}}
 {{- if $.EmitMethodsWithDBArgument -}}
 func (q *Queries) {{.MethodName}}(db DBTX, {{.Arg.Pair}}) error {
 	_, err := db.Exec(q.ctx, {{.ConstantName}}, {{.Arg.Params}})
@@ -89,8 +84,6 @@ func (q *Queries) {{.MethodName}}({{.Arg.Pair}}) error {
 {{end}}
 
 {{if eq .Cmd ":execrows"}}
-{{range .Comments}}//{{.}}
-{{end -}}
 {{if $.EmitMethodsWithDBArgument -}}
 func (q *Queries) {{.MethodName}}(db DBTX, {{.Arg.Pair}}) (int64, error) {
 	result, err := db.Exec(q.ctx, {{.ConstantName}}, {{.Arg.Params}})
@@ -106,8 +99,6 @@ func (q *Queries) {{.MethodName}}({{.Arg.Pair}}) (int64, error) {
 {{end}}
 
 {{if eq .Cmd ":execresult"}}
-{{range .Comments}}//{{.}}
-{{end -}}
 {{- if $.EmitMethodsWithDBArgument -}}
 func (q *Queries) {{.MethodName}}(db DBTX, {{.Arg.Pair}}) (pgconn.CommandTag, error) {
 	return db.Exec(q.ctx, {{.ConstantName}}, {{.Arg.Params}})

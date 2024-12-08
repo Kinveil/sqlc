@@ -1,1 +1,0 @@
-https://github.com/Kinveil/sqlc/issues/1185
