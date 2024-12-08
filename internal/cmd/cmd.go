@@ -17,11 +17,11 @@ import (
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
 
-	"github.com/sqlc-dev/sqlc/internal/config"
-	"github.com/sqlc-dev/sqlc/internal/debug"
-	"github.com/sqlc-dev/sqlc/internal/info"
-	"github.com/sqlc-dev/sqlc/internal/opts"
-	"github.com/sqlc-dev/sqlc/internal/tracer"
+	"github.com/Kinveil/sqlc/internal/config"
+	"github.com/Kinveil/sqlc/internal/debug"
+	"github.com/Kinveil/sqlc/internal/info"
+	"github.com/Kinveil/sqlc/internal/opts"
+	"github.com/Kinveil/sqlc/internal/tracer"
 )
 
 func init() {

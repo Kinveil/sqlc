@@ -3,13 +3,13 @@ package compiler
 import (
 	"sort"
 
-	analyzer "github.com/sqlc-dev/sqlc/internal/analysis"
-	"github.com/sqlc-dev/sqlc/internal/config"
-	"github.com/sqlc-dev/sqlc/internal/source"
-	"github.com/sqlc-dev/sqlc/internal/sql/ast"
-	"github.com/sqlc-dev/sqlc/internal/sql/named"
-	"github.com/sqlc-dev/sqlc/internal/sql/rewrite"
-	"github.com/sqlc-dev/sqlc/internal/sql/validate"
+	analyzer "github.com/Kinveil/sqlc/internal/analysis"
+	"github.com/Kinveil/sqlc/internal/config"
+	"github.com/Kinveil/sqlc/internal/source"
+	"github.com/Kinveil/sqlc/internal/sql/ast"
+	"github.com/Kinveil/sqlc/internal/sql/named"
+	"github.com/Kinveil/sqlc/internal/sql/rewrite"
+	"github.com/Kinveil/sqlc/internal/sql/validate"
 )
 
 type analysis struct {

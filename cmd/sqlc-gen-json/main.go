@@ -7,8 +7,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/sqlc-dev/sqlc/internal/codegen/json"
-	"github.com/sqlc-dev/sqlc/internal/plugin"
+	"github.com/Kinveil/sqlc/internal/codegen/json"
+	"github.com/Kinveil/sqlc/internal/plugin"
 	"google.golang.org/protobuf/proto"
 )
 
