@@ -32,7 +32,7 @@ type {{.Ret.Type}} struct { {{- range .Ret.Struct.Fields}}
 
 {{range .Comments}}//{{.}}
 {{end -}}
-func (q *Queries) {{.MethodName}}(ctx context.Context, {{ if $.EmitMethodsWithDBArgument}}db DBTX,{{end}} {{.Arg.SlicePair}}) *{{.MethodName}}BatchResults {
+func (q *Queries) {{.MethodName}}({{ if $.EmitMethodsWithDBArgument}}db DBTX,{{end}} {{.Arg.SlicePair}}) *{{.MethodName}}BatchResults {
     batch := &pgx.Batch{}
     for _, a := range {{index .Arg.Name}} {
         vals := []interface{}{
@@ -46,7 +46,7 @@ func (q *Queries) {{.MethodName}}(ctx context.Context, {{ if $.EmitMethodsWithDB
         }
         batch.Queue({{.ConstantName}}, vals...)
     }
-    br := {{if not $.EmitMethodsWithDBArgument}}q.{{end}}db.SendBatch(ctx, batch)
+    br := {{if not $.EmitMethodsWithDBArgument}}q.{{end}}db.SendBatch(q.ctx, batch)
     return &{{.MethodName}}BatchResults{br,len({{.Arg.Name}}),false}
 }
 
