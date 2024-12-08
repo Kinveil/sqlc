@@ -222,15 +222,14 @@ func buildQueries(req *plugin.GenerateRequest, options *opts.Options, structs []
 		}
 
 		gq := Query{
-			Cmd:             query.Cmd,
-			ConstantName:    constantName,
-			FieldName:       sdk.LowerTitle(query.Name) + "Stmt",
-			MethodName:      query.Name,
-			SourceName:      query.Filename,
-			SQL:             query.Text,
-			Comments:        comments,
-			Table:           query.InsertIntoTable,
-			TablePrimaryKey: tablePrimaryKey[query.InsertIntoTable.Name],
+			Cmd:          query.Cmd,
+			ConstantName: constantName,
+			FieldName:    sdk.LowerTitle(query.Name) + "Stmt",
+			MethodName:   query.Name,
+			SourceName:   query.Filename,
+			SQL:          query.Text,
+			Comments:     comments,
+			Table:        query.InsertIntoTable,
 		}
 		sqlpkg := parseDriver(options.SqlPackage)
 
@@ -329,6 +328,10 @@ func buildQueries(req *plugin.GenerateRequest, options *opts.Options, structs []
 				SQLDriver:   sqlpkg,
 				EmitPointer: options.EmitResultStructPointers,
 			}
+		}
+
+		if gq.Table != nil {
+			gq.TablePrimaryKey = tablePrimaryKey[gq.Table.Name]
 		}
 
 		qs = append(qs, gq)
