@@ -40,7 +40,11 @@ func (q *Queries) WithTx() (Querier, pgx.Tx, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return &Queries{db: tx}, tx, nil
+	
+	return &Queries{
+		db: tx,
+		ctx: q.ctx,
+	}, tx, nil
 }
 {{end}}
 {{end}}

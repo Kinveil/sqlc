@@ -39,9 +39,39 @@ func (r iteratorFor{{.MethodName}}) Err() error {
 {{end -}}
 {{- if $.EmitMethodsWithDBArgument -}}
 func (q *Queries) {{.MethodName}}(db DBTX, {{.Arg.SlicePair}}) (int64, error) {
+	// Return early if there are no items to copy
+	if len({{.Arg.Name}}) == 0 {
+		return 0, nil
+	}
+
+	// Sort the batched items by their primary key(s) to reduce the number of deadlocks
+	sort.Slice({{.Arg.Name}}, func(i, j int) bool {
+        {{range $index, $key := .TablePrimaryKey}}
+        if {{$.Arg.Name}}[i].{{$key}} != {{$.Arg.Name}}[j].{{$key}} {
+            return {{$.Arg.Name}}[i].{{$key}} < {{$.Arg.Name}}[j].{{$key}}
+        }
+        {{end}}
+        return false
+    })
+
 	return db.CopyFrom(q.ctx, {{.TableIdentifierAsGoSlice}}, {{.Arg.ColumnNamesAsGoSlice}}, &iteratorFor{{.MethodName}}{rows: {{.Arg.Name}}})
 {{- else -}}
 func (q *Queries) {{.MethodName}}({{.Arg.SlicePair}}) (int64, error) {
+	// Return early if there are no items to copy
+	if len({{.Arg.Name}}) == 0 {
+		return 0, nil
+	}
+
+	// Sort the batched items by their primary key(s) to reduce the number of deadlocks
+	sort.Slice({{.Arg.Name}}, func(i, j int) bool {
+        {{range $index, $key := .TablePrimaryKey}}
+        if {{$.Arg.Name}}[i].{{$key}} != {{$.Arg.Name}}[j].{{$key}} {
+            return {{$.Arg.Name}}[i].{{$key}} < {{$.Arg.Name}}[j].{{$key}}
+        }
+        {{end}}
+        return false
+    })
+
 	return q.db.CopyFrom(q.ctx, {{.TableIdentifierAsGoSlice}}, {{.Arg.ColumnNamesAsGoSlice}}, &iteratorFor{{.MethodName}}{rows: {{.Arg.Name}}})
 {{- end}}
 }

@@ -141,9 +141,7 @@ func newGoEmbed(embed *plugin.Identifier, structs []Struct, defaultSchema string
 		}
 
 		fields := make([]Field, len(s.Fields))
-		for i, f := range s.Fields {
-			fields[i] = f
-		}
+		copy(fields, s.Fields)
 
 		return &goEmbed{
 			modelType: s.Name,
@@ -184,6 +182,13 @@ func argName(name string) string {
 }
 
 func buildQueries(req *plugin.GenerateRequest, options *opts.Options, structs []Struct) ([]Query, error) {
+	var tablePrimaryKey = make(map[string][]string)
+	for _, schema := range req.Catalog.Schemas {
+		for _, table := range schema.Tables {
+			tablePrimaryKey[table.Rel.Name] = table.PrimaryKey
+		}
+	}
+
 	qs := make([]Query, 0, len(req.Queries))
 	for _, query := range req.Queries {
 		if query.Name == "" {
@@ -217,14 +222,15 @@ func buildQueries(req *plugin.GenerateRequest, options *opts.Options, structs []
 		}
 
 		gq := Query{
-			Cmd:          query.Cmd,
-			ConstantName: constantName,
-			FieldName:    sdk.LowerTitle(query.Name) + "Stmt",
-			MethodName:   query.Name,
-			SourceName:   query.Filename,
-			SQL:          query.Text,
-			Comments:     comments,
-			Table:        query.InsertIntoTable,
+			Cmd:             query.Cmd,
+			ConstantName:    constantName,
+			FieldName:       sdk.LowerTitle(query.Name) + "Stmt",
+			MethodName:      query.Name,
+			SourceName:      query.Filename,
+			SQL:             query.Text,
+			Comments:        comments,
+			Table:           query.InsertIntoTable,
+			TablePrimaryKey: tablePrimaryKey[query.InsertIntoTable.Name],
 		}
 		sqlpkg := parseDriver(options.SqlPackage)
 

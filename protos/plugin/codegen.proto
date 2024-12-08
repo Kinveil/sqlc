@@ -71,8 +71,9 @@ message Enum {
 
 message Table {
   Identifier rel = 1;
-  repeated Column columns = 2;
-  string comment = 3;
+  repeated string primary_key = 2 [json_name = "primary_key"];
+  repeated Column columns = 3;
+  string comment = 4;
 }
 
 message Identifier {
@@ -83,6 +84,7 @@ message Identifier {
 
 message Column {
   string name = 1;
+  bool primary_key = 2;
   bool not_null = 3;
   bool is_array = 4;
   string comment = 5;
@@ -106,11 +108,12 @@ message Query {
   string text = 1 [json_name = "text"];
   string name = 2 [json_name = "name"];
   string cmd = 3 [json_name = "cmd"];
-  repeated Column columns = 4 [json_name = "columns"];
-  repeated Parameter params = 5 [json_name = "parameters"];
-  repeated string comments = 6 [json_name = "comments"];
-  string filename = 7 [json_name = "filename"];
-  Identifier insert_into_table = 8 [json_name = "insert_into_table"];
+  repeated string primary_key = 4 [json_name = "primary_key"];
+  repeated Column columns = 5 [json_name = "columns"];
+  repeated Parameter params = 6 [json_name = "parameters"];
+  repeated string comments = 7 [json_name = "comments"];
+  string filename = 8 [json_name = "filename"];
+  Identifier insert_into_table = 9 [json_name = "insert_into_table"];
 }
 
 message Parameter {

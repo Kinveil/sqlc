@@ -13,9 +13,20 @@ import (
 // A database table is a collection of related data held in a table format within a database.
 // It consists of columns and rows.
 type Table struct {
-	Rel     *ast.TableName
-	Columns []*Column
-	Comment string
+	Rel        *ast.TableName
+	PrimaryKey []string
+	Columns    []*Column
+	Comment    string
+}
+
+func (table *Table) UpdatePrimaryKeys() {
+	var keys []string
+	for _, col := range table.Columns {
+		if col.IsPrimaryKey {
+			keys = append(keys, col.Name)
+		}
+	}
+	table.PrimaryKey = keys
 }
 
 func checkMissing(err error, missingOK bool) error {
@@ -120,14 +131,15 @@ func (table *Table) setNotNull(cmd *ast.AlterTableCmd) error {
 //
 // TODO: Should this just be ast Nodes?
 type Column struct {
-	Name       string
-	Type       ast.TypeName
-	IsNotNull  bool
-	IsUnsigned bool
-	IsArray    bool
-	ArrayDims  int
-	Comment    string
-	Length     *int
+	Name         string
+	Type         ast.TypeName
+	IsPrimaryKey bool
+	IsNotNull    bool
+	IsUnsigned   bool
+	IsArray      bool
+	ArrayDims    int
+	Comment      string
+	Length       *int
 
 	linkedType bool
 }
@@ -218,6 +230,8 @@ func (c *Catalog) alterTable(stmt *ast.AlterTableStmt) error {
 			}
 		}
 	}
+
+	table.UpdatePrimaryKeys()
 	return nil
 }
 
@@ -324,6 +338,7 @@ func (c *Catalog) createTable(stmt *ast.CreateTableStmt) error {
 		}
 	}
 
+	tbl.UpdatePrimaryKeys()
 	schema.Tables = append(schema.Tables, &tbl)
 	return nil
 }
@@ -487,6 +502,7 @@ func (c *Catalog) createTableAs(stmt *ast.CreateTableAsStmt, colGen columnGenera
 		return sqlerr.RelationExists(tbl.Rel.Name)
 	}
 
+	tbl.UpdatePrimaryKeys()
 	schema.Tables = append(schema.Tables, &tbl)
 
 	return nil

@@ -94,12 +94,13 @@ func pluginCatalog(c *catalog.Catalog) *plugin.Catalog {
 						Schema:  c.Type.Schema,
 						Name:    c.Type.Name,
 					},
-					Comment:   c.Comment,
-					NotNull:   c.IsNotNull,
-					Unsigned:  c.IsUnsigned,
-					IsArray:   c.IsArray,
-					ArrayDims: int32(c.ArrayDims),
-					Length:    int32(l),
+					Comment:    c.Comment,
+					PrimaryKey: c.IsPrimaryKey,
+					NotNull:    c.IsNotNull,
+					Unsigned:   c.IsUnsigned,
+					IsArray:    c.IsArray,
+					ArrayDims:  int32(c.ArrayDims),
+					Length:     int32(l),
 					Table: &plugin.Identifier{
 						Catalog: t.Rel.Catalog,
 						Schema:  t.Rel.Schema,
@@ -113,8 +114,9 @@ func pluginCatalog(c *catalog.Catalog) *plugin.Catalog {
 					Schema:  t.Rel.Schema,
 					Name:    t.Rel.Name,
 				},
-				Columns: columns,
-				Comment: t.Comment,
+				PrimaryKey: t.PrimaryKey,
+				Columns:    columns,
+				Comment:    t.Comment,
 			})
 		}
 		schemas = append(schemas, &plugin.Schema{

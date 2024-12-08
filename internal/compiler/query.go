@@ -49,7 +49,8 @@ type Query struct {
 	Params   []Parameter
 
 	// Needed for CopyFrom
-	InsertIntoTable *ast.TableName
+	InsertIntoTable           *ast.TableName
+	InsertIntoTablePrimaryKey []string
 
 	// Needed for vet
 	RawStmt *ast.RawStmt

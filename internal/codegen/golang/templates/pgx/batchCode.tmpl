@@ -33,6 +33,21 @@ type {{.Ret.Type}} struct { {{- range .Ret.Struct.Fields}}
 {{range .Comments}}//{{.}}
 {{end -}}
 func (q *Queries) {{.MethodName}}({{ if $.EmitMethodsWithDBArgument}}db DBTX,{{end}} {{.Arg.SlicePair}}) *{{.MethodName}}BatchResults {
+    // Return early if there are no items to batch
+    if len({{.Arg.Name}}) == 0 {
+        return &{{.MethodName}}BatchResults{nil,0,true}
+    }
+
+    // Sort the batched items by their primary key(s) to reduce the number of deadlocks
+	  sort.Slice({{.Arg.Name}}, func(i, j int) bool {
+        {{range $index, $key := .TablePrimaryKey}}
+        if {{$.Arg.Name}}[i].{{$key}} != {{$.Arg.Name}}[j].{{$key}} {
+            return {{$.Arg.Name}}[i].{{$key}} < {{$.Arg.Name}}[j].{{$key}}
+        }
+        {{end}}
+        return false
+    })
+    
     batch := &pgx.Batch{}
     for _, a := range {{index .Arg.Name}} {
         vals := []interface{}{
