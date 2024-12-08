@@ -266,8 +266,6 @@ func (i *importer) interfaceImports() fileImports {
 		return false
 	})
 
-	std["context"] = struct{}{}
-
 	return sortedImports(std, pkg)
 }
 
@@ -298,16 +296,12 @@ func sortedImports(std map[string]struct{}, pkg map[ImportSpec]struct{}) fileImp
 
 func (i *importer) queryImports(filename string) fileImports {
 	var gq []Query
-	anyNonCopyFrom := false
 	for _, query := range i.Queries {
 		if usesBatch([]Query{query}) {
 			continue
 		}
 		if query.SourceName == filename {
 			gq = append(gq, query)
-			if query.Cmd != metadata.CmdCopyFrom {
-				anyNonCopyFrom = true
-			}
 		}
 	}
 
@@ -390,10 +384,6 @@ func (i *importer) queryImports(filename string) fileImports {
 		return false
 	}
 
-	if anyNonCopyFrom {
-		std["context"] = struct{}{}
-	}
-
 	sqlpkg := parseDriver(i.Options.SqlPackage)
 	if sqlcSliceScan() && !sqlpkg.IsPGX() {
 		std["strings"] = struct{}{}
@@ -428,7 +418,6 @@ func (i *importer) copyfromImports() fileImports {
 		return false
 	})
 
-	std["context"] = struct{}{}
 	if i.Options.SqlDriver == opts.SQLDriverGoSQLDriverMySQL {
 		std["io"] = struct{}{}
 		std["fmt"] = struct{}{}
@@ -477,7 +466,6 @@ func (i *importer) batchImports() fileImports {
 		return false
 	})
 
-	std["context"] = struct{}{}
 	std["errors"] = struct{}{}
 	sqlpkg := parseDriver(i.Options.SqlPackage)
 	switch sqlpkg {
